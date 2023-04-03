@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.goodsMapper">
+    <select id="selectAll"  parameterType="hashmap" resultType="goodsDTO">
+        select
+        * from goods
+        order by id desc
+        LIMIT ${start}, ${size}
+        <!--        값을 그대로 넣어주는건 $ , # 사용시 자동으로 문자열 처리-->
+
+    </select>
+    <select id="selectOne"  parameterType="int" resultType="goodsDTO">
+        SELECT * FROM goods
+        WHERE id = #{id}
+    </select>
+    <!--    id생성-->
+    <insert id="insert" parameterType="goodsDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO goods(name,category,stock,image,userId,price,explanation)
+        VALUES(#{name},#{category},#{stock},#{image},#{userId},#{price},#{explanation})
+    </insert>
+    <update id="update" parameterType="goodsDTO">
+        UPDATE goods
+        SET name=#{name},
+        stock=#{stock},
+        explanation=#{explanation},
+        category=#{category},
+        price=#{price},
+        WHERE id =#{id}
+    </update>
+    <delete id="delete" parameterType="int">
+        DELETE FROM goods
+        WHERE id=#{id}
+    </delete>
+    <select id="count" resultType="int">
+        SELECT COUNT(*)
+        FROM goods
+    </select>
+    <select id="selectByKeyword" parameterType="map" resultType="goodsDTO">
+        SELECT * FROM goods
+        WHERE name LIKE concat('%',#{keyword},'%')
+        ORDER BY id DESC
+        LIMIT ${start},${size}
+    </select>
+    <select id="selectByCategory" parameterType="map" resultType="goodsDTO">
+        SELECT * FROM goods
+        WHERE category = #{category}
+        ORDER BY id DESC
+        LIMIT ${start},${size}
+    </select>
+    <select id="countSearchResult" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM goods
+        WHERE name LIKE concat('%',#{keyword},'%')
+    </select>
+    <select id="countCategoryResult" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM goods
+        WHERE category = #{category}
+    </select>
+</mapper>

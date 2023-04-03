@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <bean id="passwordEncoder"
+          class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+    <security:http auto-config="true" use-expressions="true">
+        <security:csrf disabled="true"/>
+        <security:intercept-url pattern="/resources/**" access="permitAll()"/>
+        <security:intercept-url pattern="/"  access="permitAll()"/>
+        <security:intercept-url pattern="/goods/**"  access="permitAll()"/>
+        <security:intercept-url pattern="/user/logIn"  access="permitAll()"/>
+        <security:intercept-url pattern="/user/register"  access="permitAll()"/>
+        <security:intercept-url pattern="user/auth" access="permitAll()"/>
+        <security:intercept-url pattern="user/logOut" access="isAuthenticated()"/>
+        <security:intercept-url pattern="/cart/**" access="isAuthenticated()"/>
+
+        <security:intercept-url pattern="/**" access="isAuthenticated()"/>
+        <security:form-login
+                username-parameter="username"
+                password-parameter="password"
+                login-processing-url="/user/auth"
+                default-target-url="/"
+                authentication-failure-handler-ref="userAuthFailHandler"
+                authentication-success-handler-ref="userAuthSuccessHandler"
+                login-page="/user/login"/>
+        <security:logout
+            logout-url="/user/logOut"
+            logout-success-url="/"
+            invalidate-session="true"
+            />
+        <security:remember-me
+            token-validity-seconds="60000"
+            key="sampleKey"
+            user-service-ref="userService"
+            authentication-success-handler-ref="userAuthSuccessHandler"
+            data-source-ref="datasource"
+        />
+    </security:http>
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="userService"/>
+    </security:authentication-manager>
+    <context:component-scan base-package="com.bit.spring.service"/>
+    <context:component-scan base-package="com.bit.spring.handler"/>
+
+</beans>
